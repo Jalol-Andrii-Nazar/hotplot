@@ -1,0 +1,23 @@
+[package]
+name = "hotplot"
+version = "0.0.1"
+authors = ["Nazar Kalinowski <nazark@tutanota.com>"]
+edition = "2018"
+description = "Warm-up your iced GUIs by adding fancy visualization"
+license = "GPL-3.0-or-later"
+keywords = ["plot", "plotting", "chart"]
+categories = ["visualization"]
+
+[badges]
+maintenance = { status = "experimental" }
+
+[features]
+default = ["chrono"]
+
+[dependencies]
+iced_core = { version = "0.3.0", default-features = false }
+iced_graphics = { version = "0.1.0", default-features = false, features = ["canvas"] }
+chrono = { version = "0.4.19", default-features = false, optional = true }
+
+[dev-dependencies]
+iced = { version = "0.2", features = ["canvas"] }
