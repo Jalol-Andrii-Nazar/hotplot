@@ -20,4 +20,4 @@ iced_graphics = { version = "0.1.0", default-features = false, features = ["canv
 chrono = { version = "0.4.19", default-features = false, optional = true }
 
 [dev-dependencies]
-iced = { version = "0.2", features = ["canvas"] }
+iced = { version = "0.2", features = ["canvas"], git = "https://github.com/hecrj/iced.git" }
