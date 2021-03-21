@@ -15,9 +15,9 @@ maintenance = { status = "experimental" }
 default = ["chrono"]
 
 [dependencies]
-iced_core = { version = "0.3.0", default-features = false }
-iced_graphics = { version = "0.1.0", default-features = false, features = ["canvas"] }
+iced_core = { default-features = false, git = "https://github.com/hecrj/iced.git" }
+iced_graphics = { default-features = false, features = ["canvas"], git = "https://github.com/hecrj/iced.git" }
 chrono = { version = "0.4.19", default-features = false, optional = true }
 
 [dev-dependencies]
-iced = { version = "0.2", features = ["canvas"], git = "https://github.com/hecrj/iced.git" }
+iced = { features = ["canvas"], git = "https://github.com/hecrj/iced.git" }
