@@ -1,5 +1,5 @@
-use iced_core::{Point, Rectangle, Size};
-use iced_graphics::Color;
+use iced::{Point, Rectangle, Size};
+use iced::Color;
 use std::{cmp::Ordering, hash::Hash};
 
 #[cfg(feature = "chrono")]

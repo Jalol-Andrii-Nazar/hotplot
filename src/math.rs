@@ -1,4 +1,4 @@
-use iced_core::Point;
+use iced::Point;
 
 //https://stackoverflow.com/a/12931306
 //Maps `value` from interval `[a1;b1]` to the same relative position in `[a2;b2]`

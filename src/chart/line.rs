@@ -1,8 +1,8 @@
 use std::{cmp::Ordering, collections::HashMap};
 
-use iced_core::{Color, Point, Rectangle, Size, Vector};
-use iced_graphics::canvas::{Cache, Cursor, Frame, Geometry, Path, Program, Stroke, Text};
-use iced_graphics::{HorizontalAlignment, VerticalAlignment};
+use iced::{Color, Point, Rectangle, Size, Vector};
+use iced::canvas::{Cache, Cursor, Frame, Geometry, Path, Program, Stroke, Text};
+use iced::{HorizontalAlignment, VerticalAlignment};
 
 pub mod data;
 
@@ -602,26 +602,26 @@ impl<XV: data::AxisValue, YV: data::AxisValue, XD: data::AxisData<XV>, YD: data:
 
     fn update(
         &mut self,
-        event: iced_graphics::canvas::Event,
-        _bounds: iced_core::Rectangle,
-        _cursor: iced_graphics::canvas::Cursor,
-    ) -> (iced_graphics::canvas::event::Status, Option<data::Message>) {
+        event: iced::canvas::Event,
+        _bounds: iced::Rectangle,
+        _cursor: iced::canvas::Cursor,
+    ) -> (iced::canvas::event::Status, Option<data::Message>) {
         match event {
-            iced_graphics::canvas::Event::Mouse(iced_core::mouse::Event::CursorMoved {
+            iced::canvas::Event::Mouse(iced::mouse::Event::CursorMoved {
                 ..
             }) => {
                 self.cache.clear();
-                (iced_graphics::canvas::event::Status::Captured, None)
+                (iced::canvas::event::Status::Captured, None)
             }
-            _ => (iced_graphics::canvas::event::Status::Ignored, None),
+            _ => (iced::canvas::event::Status::Ignored, None),
         }
     }
 
     fn mouse_interaction(
         &self,
-        bounds: iced_core::Rectangle,
-        cursor: iced_graphics::canvas::Cursor,
-    ) -> iced_core::mouse::Interaction {
+        bounds: iced::Rectangle,
+        cursor: iced::canvas::Cursor,
+    ) -> iced::mouse::Interaction {
         let size = bounds.size();
 
         let full_area = Rectangle::new(Point::ORIGIN, size);
@@ -644,8 +644,8 @@ impl<XV: data::AxisValue, YV: data::AxisValue, XD: data::AxisData<XV>, YD: data:
                             || cursor_position.distance(*p2) <= 14.0
                     })
                 });
-                hovered.then_some(iced_core::mouse::Interaction::Pointer)
+                hovered.then_some(iced::mouse::Interaction::Pointer)
             })
-            .unwrap_or(iced_core::mouse::Interaction::default())
+            .unwrap_or(iced::mouse::Interaction::default())
     }
 }
