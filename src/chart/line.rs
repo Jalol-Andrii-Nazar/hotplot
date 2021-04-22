@@ -17,9 +17,7 @@ pub struct ChartBuilder<
     pub max_x_value_opt: Option<XV>,
     pub min_y_value_opt: Option<YV>,
     pub max_y_value_opt: Option<YV>,
-    pub data: HashMap<data::PlotSettings, Vec<(XD, YD)>>,
-    pub custom_x_labels: Vec<(XV, Option<String>)>,
-    pub custom_y_labels: Vec<(YV, Option<String>)>,
+    pub data: HashMap<data::PlotSettings, Vec<(XD, YD)>>
 }
 
 impl<XV: data::AxisValue, YV: data::AxisValue, XD: data::AxisData<XV>, YD: data::AxisData<YV>>
@@ -33,8 +31,6 @@ impl<XV: data::AxisValue, YV: data::AxisValue, XD: data::AxisData<XV>, YD: data:
             min_y_value_opt: None,
             max_y_value_opt: None,
             data: HashMap::new(),
-            custom_x_labels: Vec::new(),
-            custom_y_labels: Vec::new(),
         }
     }
 
@@ -49,8 +45,6 @@ impl<XV: data::AxisValue, YV: data::AxisValue, XD: data::AxisData<XV>, YD: data:
         let min_y_value = self.min_y_value_opt.unwrap();
         let max_y_value = self.max_y_value_opt.unwrap();
         let data = self.data;
-        let custom_x_labels = self.custom_x_labels;
-        let custom_y_labels = self.custom_y_labels;
         Chart::new(
             settings,
             min_x_value,
@@ -58,8 +52,6 @@ impl<XV: data::AxisValue, YV: data::AxisValue, XD: data::AxisData<XV>, YD: data:
             min_y_value,
             max_y_value,
             data,
-            custom_x_labels,
-            custom_y_labels,
         )
     }
 
@@ -70,26 +62,6 @@ impl<XV: data::AxisValue, YV: data::AxisValue, XD: data::AxisData<XV>, YD: data:
 
     pub fn add_data(mut self, plot_settings: data::PlotSettings, edges: Vec<(XD, YD)>) -> Self {
         self.data.insert(plot_settings, edges);
-        self
-    }
-
-    pub fn custom_x_labels(mut self, custom_x_labels: Vec<(XV, Option<String>)>) -> Self {
-        self.custom_x_labels = custom_x_labels;
-        self
-    }
-
-    pub fn add_custom_x_label(mut self, value: XV, text: Option<String>) -> Self {
-        self.custom_x_labels.push((value, text));
-        self
-    }
-
-    pub fn custom_y_labels(mut self, custom_y_labels: Vec<(YV, Option<String>)>) -> Self {
-        self.custom_y_labels = custom_y_labels;
-        self
-    }
-
-    pub fn add_custom_y_label(mut self, value: YV, text: Option<String>) -> Self {
-        self.custom_y_labels.push((value, text));
         self
     }
 
@@ -197,8 +169,6 @@ pub struct Chart<
     pub max_y_value: YV,
     total_y_distance: f32,
     pub data: HashMap<data::PlotSettings, Vec<(XD, YD)>>,
-    pub custom_x_labels: Vec<(XV, Option<String>)>,
-    pub custom_y_labels: Vec<(YV, Option<String>)>,
     cache: Cache,
 }
 
@@ -212,8 +182,6 @@ impl<XV: data::AxisValue, YV: data::AxisValue, XD: data::AxisData<XV>, YD: data:
         min_y_value: YV,
         max_y_value: YV,
         data: HashMap<data::PlotSettings, Vec<(XD, YD)>>,
-        custom_x_labels: Vec<(XV, Option<String>)>,
-        custom_y_labels: Vec<(YV, Option<String>)>,
     ) -> Self {
         let total_x_distance = min_x_value.distance_to(&max_x_value);
         let total_y_distance = min_y_value.distance_to(&max_y_value);
@@ -226,8 +194,6 @@ impl<XV: data::AxisValue, YV: data::AxisValue, XD: data::AxisData<XV>, YD: data:
             max_y_value,
             total_y_distance,
             data,
-            custom_x_labels,
-            custom_y_labels,
             cache: Cache::default(),
         }
     }
@@ -408,27 +374,6 @@ impl<XV: data::AxisValue, YV: data::AxisValue, XD: data::AxisData<XV>, YD: data:
                 vertical_alignment: VerticalAlignment::Center,
                 ..Default::default()
             });
-
-            //Draw custom y labels
-            for (yv, label_text) in self.custom_y_labels.iter() {
-                if self.min_y_value.compare_value(yv) == Ordering::Less && self.max_y_value.compare_value(yv) == Ordering::Greater {
-                    let distance = self.min_y_value.distance_to(&yv);
-                    let y = crate::math::map_inverval_value(
-                        distance,
-                        (0.0, self.total_y_distance),
-                        (0.0, margined_area.height),
-                    );
-                    if y >= 0.0 && y <= margined_area.height {
-                        self.draw_y_label(
-                            frame,
-                            padded_area,
-                            margined_area.y + margined_area.height - y,
-                            YD::display_value(yv),
-                            label_text.clone()
-                        );
-                    }
-                }
-            }
 
             //Draw y labels
             let min_y_label_distance = self.settings.min_y_label_distance.get(margined_area.size());

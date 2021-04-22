@@ -17,3 +17,8 @@ default = ["chrono"]
 [dependencies]
 iced = { version = "0.3", features = ["canvas"] }
 chrono = { version = "0.4.19", default-features = false, optional = true }
+
+[dev-dependencies]
+coingecko_requests = { git = "https://github.com/Jalol-Andrii-Nazar/coingecko_requests.git" }
+tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
+futures = "0.3.13"

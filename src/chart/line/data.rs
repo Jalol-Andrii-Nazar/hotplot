@@ -307,9 +307,9 @@ impl AxisValue for char {
 
     fn get_values_in_between(
         &self,
-        other: &Self,
-        min_distance: f32,
-        optimal_distance: f32,
+        _other: &Self,
+        _min_distance: f32,
+        _optimal_distance: f32,
     ) -> Vec<Self> {
         Vec::new()
     }
