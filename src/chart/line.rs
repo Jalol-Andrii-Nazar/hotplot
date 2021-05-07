@@ -1,4 +1,4 @@
-use std::{cmp::Ordering, collections::HashMap};
+use std::collections::HashMap;
 
 use iced::{Color, Point, Rectangle, Size, Vector};
 use iced::canvas::{Cache, Cursor, Frame, Geometry, Path, Program, Stroke, Text};

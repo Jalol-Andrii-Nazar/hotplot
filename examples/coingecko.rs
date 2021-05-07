@@ -9,10 +9,10 @@ use iced::{Application, Canvas, Color, Command, Container, Element, Length, Sett
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut client = coingecko_requests::caching_client::Client::new(coingecko_requests::api_client::Client::new()).await?;
     let from = NaiveDate::from_ymd(2016, 10, 10).and_hms(0, 0, 0).timestamp();
-    let to = NaiveDate::from_ymd(2019, 10, 10).and_hms(0, 0, 0).timestamp();
+    let to = NaiveDate::from_ymd(2021, 04, 22).and_hms(0, 0, 0).timestamp();
     println!("From: {}", from);
     println!("To: {}", to);
-    let chart = client.market_chart("bitcoin", "usd", from as u64, to as u64).await?;
+    let chart = client.market_chart("litecoin", "usd", from as u64, to as u64).await?;
     let mut settings = Settings::with_flags(MyFlags {
         chart
     });
@@ -68,10 +68,6 @@ impl Application for MyApp {
             ..Default::default()
         };
         let plot_settings1 = PlotSettings {
-            ..Default::default()
-        };
-        let plot_settings2 = PlotSettings {
-            color: Color::from_rgb8(0, 200, 0),
             ..Default::default()
         };
         let edges = self.chart.raw.prices
