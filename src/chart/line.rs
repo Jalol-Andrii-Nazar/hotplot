@@ -257,7 +257,7 @@ impl<XV: data::AxisValue, YV: data::AxisValue, XD: data::AxisData<XV>, YD: data:
             ),
             Stroke {
                 color: Color::from_rgba8(0, 0, 0, 0.8),
-                width: 0.6,
+                width: 1.0,
                 ..Default::default()
             },
         );
@@ -312,7 +312,7 @@ impl<XV: data::AxisValue, YV: data::AxisValue, XD: data::AxisData<XV>, YD: data:
             ),
             Stroke {
                 color: Color::from_rgba8(0, 0, 0, 0.8),
-                width: 0.6,
+                width: 1.0,
                 ..Default::default()
             },
         );
