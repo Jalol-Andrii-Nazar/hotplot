@@ -231,8 +231,8 @@ impl<XV: AxisValue, YV: AxisValue, XD: AxisData<XV>, YD: AxisData<YV>> Chart<XV,
         padded_area: Rectangle,
         y: f32,
         left_text: String,
-        right_text_opt: Option<String>,
     ) {
+        let theme = self.settings.theme.clone();
         let width = frame.width();
         frame.stroke(
             &Path::line(
@@ -240,7 +240,10 @@ impl<XV: AxisValue, YV: AxisValue, XD: AxisData<XV>, YD: AxisData<YV>> Chart<XV,
                 Point::new(padded_area.x + 3.0, y),
             ),
             Stroke {
-                color: Color::from_rgba8(0, 0, 0, 0.8),
+                color: Color {
+                    a: 0.8,
+                    ..theme.title_color
+                },
                 width: 3.0,
                 ..Default::default()
             },
@@ -251,43 +254,27 @@ impl<XV: AxisValue, YV: AxisValue, XD: AxisData<XV>, YD: AxisData<YV>> Chart<XV,
                 Point::new(width - padded_area.x, y),
             ),
             Stroke {
-                color: Color::from_rgba8(0, 0, 0, 0.8),
+                color: Color {
+                    a: 0.8,
+                    ..theme.title_color
+                },
                 width: 1.0,
                 ..Default::default()
             },
         );
         frame.fill_text(Text {
             content: format!("{}", left_text),
+            color: theme.title_color,
             position: Point::new(padded_area.x - 5.0, y),
             horizontal_alignment: HorizontalAlignment::Right,
             vertical_alignment: VerticalAlignment::Center,
             size: 12.0,
             ..Default::default()
         });
-        right_text_opt.iter().for_each(|right_text| {
-            frame.stroke(
-                &Path::line(
-                    Point::new(width - padded_area.x - 3.0, y),
-                    Point::new(width - padded_area.x + 3.0, y),
-                ),
-                Stroke {
-                    color: Color::from_rgba8(0, 0, 0, 0.8),
-                    width: 3.0,
-                    ..Default::default()
-                },
-            );
-            frame.fill_text(Text {
-                content: format!("{}", *right_text),
-                position: Point::new(width - padded_area.x + 5.0, y),
-                horizontal_alignment: HorizontalAlignment::Left,
-                vertical_alignment: VerticalAlignment::Center,
-                size: 12.0,
-                ..Default::default()
-            });
-        });
     }
 
     fn draw_x_label(&self, frame: &mut Frame, padded_area: Rectangle, x: f32, text: String) {
+        let theme = self.settings.theme.clone();
         let height = frame.height();
         frame.stroke(
             &Path::line(
@@ -295,7 +282,10 @@ impl<XV: AxisValue, YV: AxisValue, XD: AxisData<XV>, YD: AxisData<YV>> Chart<XV,
                 Point::new(x, height - padded_area.y + 3.0),
             ),
             Stroke {
-                color: Color::from_rgba8(0, 0, 0, 0.8),
+                color: Color {
+                    a: 0.8,
+                    ..theme.title_color
+                },
                 width: 3.0,
                 ..Default::default()
             },
@@ -306,13 +296,17 @@ impl<XV: AxisValue, YV: AxisValue, XD: AxisData<XV>, YD: AxisData<YV>> Chart<XV,
                 Point::new(x, height - padded_area.y),
             ),
             Stroke {
-                color: Color::from_rgba8(0, 0, 0, 0.8),
+                color: Color {
+                    a: 0.8,
+                    ..theme.title_color
+                },
                 width: 1.0,
                 ..Default::default()
             },
         );
         frame.fill_text(Text {
             content: format!("{}", text),
+            color: theme.title_color,
             position: Point::new(x, height - padded_area.y + 5.0),
             horizontal_alignment: HorizontalAlignment::Center,
             vertical_alignment: VerticalAlignment::Top,
@@ -410,7 +404,6 @@ impl<XV: data::AxisValue, YV: data::AxisValue, XD: data::AxisData<XV>, YD: data:
                     padded_area,
                     margined_area.y + margined_area.height - y,
                     text,
-                    None
                 );
             }
 
