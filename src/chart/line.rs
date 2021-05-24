@@ -1,28 +1,28 @@
+pub mod data;
+
 use std::collections::HashMap;
 
 use iced::{Color, Point, Rectangle, Size, Vector};
 use iced::canvas::{Cache, Cursor, Frame, Geometry, Path, Program, Stroke, Text};
 use iced::{HorizontalAlignment, VerticalAlignment};
 
-pub mod data;
+use self::data::{AxisData, AxisValue, PlotSettings, Settings};
 
 pub struct ChartBuilder<
-    XV: data::AxisValue,
-    YV: data::AxisValue,
-    XD: data::AxisData<XV>,
-    YD: data::AxisData<YV>,
+    XV: AxisValue,
+    YV: AxisValue,
+    XD: AxisData<XV>,
+    YD: AxisData<YV>,
 > {
-    pub settings: data::Settings,
+    pub settings: Settings,
     pub min_x_value_opt: Option<XV>,
     pub max_x_value_opt: Option<XV>,
     pub min_y_value_opt: Option<YV>,
     pub max_y_value_opt: Option<YV>,
-    pub data: HashMap<data::PlotSettings, Vec<(XD, YD)>>
+    pub data: Vec<(PlotSettings, Vec<(XD, YD)>)>,
 }
 
-impl<XV: data::AxisValue, YV: data::AxisValue, XD: data::AxisData<XV>, YD: data::AxisData<YV>>
-    ChartBuilder<XV, YV, XD, YD>
-{
+impl <XV: AxisValue, YV: AxisValue, XD: AxisData<XV>, YD: AxisData<YV>> ChartBuilder<XV, YV, XD, YD> {
     pub fn new(settings: data::Settings) -> Self {
         Self {
             settings,
@@ -30,7 +30,7 @@ impl<XV: data::AxisValue, YV: data::AxisValue, XD: data::AxisData<XV>, YD: data:
             max_x_value_opt: None,
             min_y_value_opt: None,
             max_y_value_opt: None,
-            data: HashMap::new(),
+            data: Vec::new(),
         }
     }
 
@@ -55,13 +55,13 @@ impl<XV: data::AxisValue, YV: data::AxisValue, XD: data::AxisData<XV>, YD: data:
         )
     }
 
-    pub fn data(mut self, data: HashMap<data::PlotSettings, Vec<(XD, YD)>>) -> Self {
+    pub fn data(mut self, data: Vec<(PlotSettings, Vec<(XD, YD)>)>) -> Self {
         self.data = data;
         self
     }
 
-    pub fn add_data(mut self, plot_settings: data::PlotSettings, edges: Vec<(XD, YD)>) -> Self {
-        self.data.insert(plot_settings, edges);
+    pub fn add_data(mut self, plot_settings: PlotSettings, edges: Vec<(XD, YD)>) -> Self {
+        self.data.push((plot_settings, edges));
         self
     }
 
@@ -142,11 +142,13 @@ impl<XV: data::AxisValue, YV: data::AxisValue, XD: data::AxisData<XV>, YD: data:
     }
 
     pub fn calculate_min_max_x_values(self) -> Self {
-        self.calculate_min_x_value().calculate_max_x_value()
+        self.calculate_min_x_value()
+            .calculate_max_x_value()
     }
 
     pub fn calculate_min_max_y_values(self) -> Self {
-        self.calculate_min_y_value().calculate_max_y_value()
+        self.calculate_min_y_value()
+            .calculate_max_y_value()
     }
 
     pub fn calculate_min_max_values(self) -> Self {
@@ -155,33 +157,26 @@ impl<XV: data::AxisValue, YV: data::AxisValue, XD: data::AxisData<XV>, YD: data:
     }
 }
 
-pub struct Chart<
-    XV: data::AxisValue,
-    YV: data::AxisValue,
-    XD: data::AxisData<XV>,
-    YD: data::AxisData<YV>,
-> {
-    pub settings: data::Settings,
+pub struct Chart<XV: AxisValue, YV: AxisValue, XD: AxisData<XV>, YD: AxisData<YV>> {
+    pub settings: Settings,
     pub min_x_value: XV,
     pub max_x_value: XV,
     total_x_distance: f32,
     pub min_y_value: YV,
     pub max_y_value: YV,
     total_y_distance: f32,
-    pub data: HashMap<data::PlotSettings, Vec<(XD, YD)>>,
+    pub data: Vec<(PlotSettings, Vec<(XD, YD)>)>,
     cache: Cache,
 }
 
-impl<XV: data::AxisValue, YV: data::AxisValue, XD: data::AxisData<XV>, YD: data::AxisData<YV>>
-    Chart<XV, YV, XD, YD>
-{
+impl<XV: AxisValue, YV: AxisValue, XD: AxisData<XV>, YD: AxisData<YV>> Chart<XV, YV, XD, YD> {
     pub fn new(
         settings: data::Settings,
         min_x_value: XV,
         max_x_value: XV,
         min_y_value: YV,
         max_y_value: YV,
-        data: HashMap<data::PlotSettings, Vec<(XD, YD)>>,
+        data: Vec<(data::PlotSettings, Vec<(XD, YD)>)>,
     ) -> Self {
         let total_x_distance = min_x_value.distance_to(&max_x_value);
         let total_y_distance = min_y_value.distance_to(&max_y_value);
@@ -198,10 +193,10 @@ impl<XV: data::AxisValue, YV: data::AxisValue, XD: data::AxisData<XV>, YD: data:
         }
     }
 
-    fn points(&self, size: Size) -> HashMap<data::PlotSettings, Vec<(Point, XD, YD)>> {
+    fn points(&self, size: Size) -> Vec<(PlotSettings, Vec<(Point, XD, YD)>)> {
         let width = size.width;
         let height = size.height;
-        let result: HashMap<data::PlotSettings, Vec<(Point, XD, YD)>> = self
+        let result: Vec<(PlotSettings, Vec<(Point, XD, YD)>)> = self
             .data
             .iter()
             .map(|(plot_settings, edges)| {
@@ -224,7 +219,7 @@ impl<XV: data::AxisValue, YV: data::AxisValue, XD: data::AxisData<XV>, YD: data:
                         (point, x.to_owned(), y.to_owned())
                     })
                     .collect();
-                (*plot_settings, result)
+                (plot_settings.clone(), result)
             })
             .collect();
         result
@@ -292,7 +287,7 @@ impl<XV: data::AxisValue, YV: data::AxisValue, XD: data::AxisData<XV>, YD: data:
         });
     }
 
-    fn draw_bottom_x_label(&self, frame: &mut Frame, padded_area: Rectangle, x: f32, text: String) {
+    fn draw_x_label(&self, frame: &mut Frame, padded_area: Rectangle, x: f32, text: String) {
         let height = frame.height();
         frame.stroke(
             &Path::line(
@@ -351,13 +346,13 @@ impl<XV: data::AxisValue, YV: data::AxisValue, XD: data::AxisData<XV>, YD: data:
         let result = self.cache.draw(size, |frame| {
             frame.fill(
                 &Path::rectangle(full_area.position(), full_area.size()),
-                self.settings.background_color,
+                self.settings.theme.background_color,
             );
             frame.fill(
                 &Path::rectangle(padded_area.position(), padded_area.size()),
-                self.settings.padded_background_color,
+                self.settings.theme.padded_background_color,
             );
-            self.settings.margined_background_color.iter().for_each(|margined_background_color| {
+            self.settings.theme.margined_background_color.iter().for_each(|margined_background_color| {
                 frame.fill(
                     &Path::rectangle(margined_area.position(), margined_area.size()),
                     *margined_background_color,
@@ -365,16 +360,21 @@ impl<XV: data::AxisValue, YV: data::AxisValue, XD: data::AxisData<XV>, YD: data:
             });
 
             //Draw name
-            frame.fill_text(Text {
-                content: self.settings.title.clone(),
-                position: Point::new(pleft, ptop / 2.0),
-                color: self.settings.title_color,
-                size: self.settings.title_size,
-                horizontal_alignment: HorizontalAlignment::Left,
-                vertical_alignment: VerticalAlignment::Center,
-                ..Default::default()
-            });
-
+            self.settings.title
+                .as_ref()
+                .iter()
+                .for_each(|title| {
+                    frame.fill_text(Text {
+                        content: (*title).clone(),
+                        position: Point::new(pleft, ptop / 2.0),
+                        color: self.settings.theme.title_color,
+                        size: self.settings.theme.title_size,
+                        horizontal_alignment: HorizontalAlignment::Left,
+                        vertical_alignment: VerticalAlignment::Center,
+                        ..Default::default()
+                    });
+        
+                });
             //Draw y labels
             let min_y_label_distance = self.settings.min_y_label_distance.get(margined_area.size());
             let min_y_label_distance_mapped = crate::math::map_inverval_value(
@@ -440,7 +440,7 @@ impl<XV: data::AxisValue, YV: data::AxisValue, XD: data::AxisData<XV>, YD: data:
                     (0.0, self.total_x_distance),
                     (0.0, margined_area.width),
                 );
-                self.draw_bottom_x_label(frame, padded_area, margined_area.x + x, text);
+                self.draw_x_label(frame, padded_area, margined_area.x + x, text);
             }
 
             let points = self.points(margined_area.size());
@@ -508,7 +508,8 @@ impl<XV: data::AxisValue, YV: data::AxisValue, XD: data::AxisData<XV>, YD: data:
             frame.with_save(|frame| {
                 frame.translate(Vector::new(margined_area.x, margined_area.y));
                 for (plot_settings, vec) in points.iter() {
-                    let color = plot_settings.color;
+                    let line_color = plot_settings.theme.line_color;
+                    let point_color = plot_settings.theme.point_color;
                     let line_selected = matches!(selected_plot_opt, Some(r) if std::ptr::eq(r, plot_settings));
                     let line_size = if line_selected {
                         plot_settings.line_size2
@@ -524,7 +525,7 @@ impl<XV: data::AxisValue, YV: data::AxisValue, XD: data::AxisData<XV>, YD: data:
                         frame.stroke(
                             &Path::line(p1, p2),
                             Stroke {
-                                color: color,
+                                color: line_color,
                                 width: line_size,
                                 ..Default::default()
                             },
@@ -533,11 +534,11 @@ impl<XV: data::AxisValue, YV: data::AxisValue, XD: data::AxisData<XV>, YD: data:
 
                     //Draw points
                     for (p, _xd, _yd) in vec.iter() {
-                        let selected = margined_cursor_position_opt
-                            .map(|cursor_position| p.distance(cursor_position) <= 14.0)
+                        let selected = selected_point_opt
+                            .map(|(_settings, (selected_point, _xd, _yd))| *selected_point == *p)
                             .unwrap_or(false);
-                        let size = if selected { selected_point_size } else { point_size};
-                        frame.fill(&Path::circle(*p, size), color);
+                        let size = if selected { selected_point_size } else { point_size };
+                        frame.fill(&Path::circle(*p, size), point_color);
                     }
                 }
             });
@@ -580,7 +581,7 @@ impl<XV: data::AxisValue, YV: data::AxisValue, XD: data::AxisData<XV>, YD: data:
         margined_cursor_position_opt
             .and_then(|cursor_position| {
                 let points = self.points(margined_area.size());
-                let hovered = points.values().any(|vec| {
+                let hovered = points.iter().any(|(_settings, vec)| {
                     vec.windows(2).any(|slice| {
                         let (p1, _xd1, _yd1) = &slice[0];
                         let (p2, _xd2, _yd2) = &slice[1];

@@ -5,13 +5,31 @@ use std::{cmp::Ordering, hash::Hash};
 #[cfg(feature = "chrono")]
 use chrono::{Date, DateTime, Duration, NaiveDate, NaiveDateTime, NaiveTime, offset::TimeZone};
 
-pub struct Settings {
+#[derive(Debug, Clone)]
+pub struct ThemeSettings {
     pub background_color: Color,
     pub padded_background_color: Color,
     pub margined_background_color: Option<Color>,
-    pub title: String,
     pub title_color: Color,
     pub title_size: f32,
+}
+
+impl Default for ThemeSettings {
+    fn default() -> Self {
+        Self {
+            background_color: Color::from_rgb8(211, 211, 211),
+            padded_background_color: Color::WHITE,
+            margined_background_color: Some(Color::from_rgb8(241, 241, 241)),
+            title_color: Color::BLACK,
+            title_size: 32.0,
+        }
+    }
+}
+
+#[derive(Debug, Clone)]
+pub struct Settings {
+    pub theme: ThemeSettings,
+    pub title: Option<String>,
     pub padding: QuadDistance,
     pub margin: QuadDistance,
     pub min_x_label_distance: DistanceValue,
@@ -21,12 +39,8 @@ pub struct Settings {
 impl Default for Settings {
     fn default() -> Self {
         Self {
-            background_color: Color::from_rgb8(211, 211, 211),
-            padded_background_color: Color::WHITE,
-            margined_background_color: Some(Color::from_rgb8(241, 241, 241)),
-            title: "A plot".to_string(),
-            title_color: Color::BLACK,
-            title_size: 32.0,
+            theme: Default::default(),
+            title: None,
             padding: QuadDistance::from1(DistanceValue::Fixed(60.0)),
             margin: QuadDistance::from1(DistanceValue::Fixed(20.0)),
             min_x_label_distance: DistanceValue::Fixed(100.0),
@@ -35,9 +49,37 @@ impl Default for Settings {
     }
 }
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, PartialEq)]
+pub struct PlotThemeSettings {
+    pub line_color: Color,
+    pub point_color: Color,
+}
+
+impl Default for PlotThemeSettings {
+    fn default() -> Self {
+        Self {
+            line_color: Color::from_rgb8(200, 0, 0),
+            point_color: Color::from_rgb8(200, 0, 0),
+        }
+    }
+}
+
+impl Hash for PlotThemeSettings {
+    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+        state.write_u32(self.line_color.r.to_bits());
+        state.write_u32(self.line_color.g.to_bits());
+        state.write_u32(self.line_color.b.to_bits());
+        state.write_u32(self.line_color.a.to_bits());
+        state.write_u32(self.point_color.r.to_bits());
+        state.write_u32(self.point_color.g.to_bits());
+        state.write_u32(self.point_color.b.to_bits());
+        state.write_u32(self.point_color.a.to_bits());
+    }
+}
+
+#[derive(Debug, Clone)]
 pub struct PlotSettings {
-    pub color: Color,
+    pub theme: PlotThemeSettings,
     pub line_selection_distance: f32,
     pub point_selection_distance: f32,
     pub line_size1: f32,  //Line is not selected
@@ -50,7 +92,7 @@ pub struct PlotSettings {
 impl Default for PlotSettings {
     fn default() -> Self {
         Self {
-            color: Color::from_rgb8(200, 0, 0),
+            theme: Default::default(),
             line_selection_distance: 4.0,
             point_selection_distance: 10.0,
             line_size1: 2.0,
@@ -64,7 +106,7 @@ impl Default for PlotSettings {
 
 impl PartialEq for PlotSettings {
     fn eq(&self, other: &Self) -> bool {
-        self.color == other.color
+        self.theme == other.theme
             && self.line_size1 == other.line_size1
             && self.line_size2 == other.line_size2
             && self.point_size1 == other.point_size1
@@ -73,14 +115,9 @@ impl PartialEq for PlotSettings {
     }
 }
 
-impl Eq for PlotSettings {}
-
 impl Hash for PlotSettings {
     fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
-        state.write_u32(self.color.r.to_bits());
-        state.write_u32(self.color.g.to_bits());
-        state.write_u32(self.color.b.to_bits());
-        state.write_u32(self.color.a.to_bits());
+        PlotThemeSettings::hash(&self.theme, state);
         state.write_u32(self.line_size1.to_bits());
         state.write_u32(self.line_size2.to_bits());
         state.write_u32(self.point_size1.to_bits());
@@ -104,6 +141,7 @@ impl DistanceValue {
     }
 }
 
+#[derive(Debug, Clone, Copy)]
 pub struct QuadDistance {
     pub top: DistanceValue,
     pub right: DistanceValue,

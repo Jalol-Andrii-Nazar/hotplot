@@ -1,7 +1,5 @@
-use std::collections::HashMap;
-
 use chrono::{NaiveDate, NaiveTime, NaiveDateTime};
-use hotplot::chart::line::data::PlotSettings;
+use hotplot::chart::line::data::{PlotSettings, PlotThemeSettings};
 use iced::{window, Canvas, Color, Container, Element, Length, Sandbox, Settings};
 
 fn main() {
@@ -36,8 +34,7 @@ impl Sandbox for MyApp {
 
     fn view(&mut self) -> iced::Element<'_, Self::Message> {
         let settings = hotplot::chart::line::data::Settings {
-            title: "Test".to_owned(),
-            title_color: Color::from_rgb8(200, 0, 0),
+            title: None, //Some("Test".to_owned()),
             min_x_label_distance: hotplot::chart::line::data::DistanceValue::Fixed(200.0),
             ..Default::default()
         };
@@ -45,7 +42,10 @@ impl Sandbox for MyApp {
             ..Default::default()
         };
         let plot_settings2 = PlotSettings {
-            color: Color::from_rgb8(0, 200, 0),
+            theme: PlotThemeSettings {
+                line_color: Color::from_rgb8(0, 200, 0),
+                point_color: Color::from_rgb8(0, 200, 0),
+            },
             ..Default::default()
         };
         let edges1: Vec<(NaiveDateTime, i32)> = vec![
@@ -58,9 +58,9 @@ impl Sandbox for MyApp {
             (NaiveDate::from_ymd(2020, 12, 10).and_time(NaiveTime::from_hms(0, 0, 0)), 117),
             (NaiveDate::from_ymd(2020, 12, 12).and_time(NaiveTime::from_hms(0, 0, 0)), 12),
         ];
-        let mut data = HashMap::new();
-        data.insert(plot_settings1, edges1);
-        data.insert(plot_settings2, edges2);
+        let mut data = Vec::new();
+        data.push((plot_settings1, edges1));
+        data.push((plot_settings2, edges2));
         let min_x_value = NaiveDate::from_ymd(2020, 12, 4).and_time(NaiveTime::from_hms(0, 0, 0));
         let max_x_value = NaiveDate::from_ymd(2020, 12, 13).and_time(NaiveTime::from_hms(0, 0, 0));
         let line = hotplot::chart::line::ChartBuilder::new(settings)
@@ -76,13 +76,5 @@ impl Sandbox for MyApp {
             .height(Length::Fill);
         let elem: Element<_> = container.into();
         elem.map(|_| MyAppMsg {})
-    }
-
-    fn background_color(&self) -> Color {
-        Color::WHITE
-    }
-
-    fn scale_factor(&self) -> f64 {
-        1.0
     }
 }
