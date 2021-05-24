@@ -320,6 +320,8 @@ impl<XV: data::AxisValue, YV: data::AxisValue, XD: data::AxisData<XV>, YD: data:
     Program<data::Message> for Chart<XV, YV, XD, YD>
 {
     fn draw(&self, bounds: Rectangle, cursor: Cursor) -> Vec<Geometry> {
+        let theme = self.settings.theme.clone();
+        
         let size = bounds.size();
         let width = bounds.width;
         let height = bounds.height;
@@ -490,7 +492,7 @@ impl<XV: data::AxisValue, YV: data::AxisValue, XD: data::AxisData<XV>, YD: data:
                     frame.fill_text(Text {
                         content,
                         position: Point::new(padded_area.width + pleft, ptop / 2.0),
-                        color: Color::BLACK,
+                        color: theme.title_color,
                         size: 16.0,
                         horizontal_alignment: HorizontalAlignment::Right,
                         vertical_alignment: VerticalAlignment::Center,
