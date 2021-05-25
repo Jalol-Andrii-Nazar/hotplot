@@ -12,6 +12,20 @@ pub struct ThemeSettings {
     pub margined_background_color: Option<Color>,
     pub title_color: Color,
     pub title_size: f32,
+    pub data_description_color: Color,
+    pub data_description_size: f32,
+    pub x_label_text_color: Color,
+    pub x_label_text_size: f32,
+    pub x_label_long_line_color: Color,
+    pub x_label_long_line_width: f32,
+    pub x_label_short_line_color: Color,
+    pub x_label_short_line_width: f32,
+    pub y_label_text_color: Color,
+    pub y_label_text_size: f32,
+    pub y_label_long_line_color: Color,
+    pub y_label_long_line_width: f32,
+    pub y_label_short_line_color: Color,
+    pub y_label_short_line_width: f32,
 }
 
 impl Default for ThemeSettings {
@@ -22,6 +36,32 @@ impl Default for ThemeSettings {
             margined_background_color: Some(Color::from_rgb8(241, 241, 241)),
             title_color: Color::BLACK,
             title_size: 32.0,
+            data_description_color: Color::BLACK,
+            data_description_size: 16.0,
+            x_label_text_color: Color::BLACK,
+            x_label_text_size: 12.0,
+            x_label_long_line_width: 3.0,
+            x_label_long_line_color: Color {
+                a: 0.8,
+                ..Color::BLACK
+            },
+            x_label_short_line_width: 1.0,
+            x_label_short_line_color: Color {
+                a: 0.8,
+                ..Color::BLACK
+            },
+            y_label_text_color: Color::BLACK,
+            y_label_text_size: 12.0,
+            y_label_long_line_width: 3.0,
+            y_label_long_line_color: Color {
+                a: 0.8,
+                ..Color::BLACK
+            },
+            y_label_short_line_width: 1.0,
+            y_label_short_line_color: Color {
+                a: 0.8,
+                ..Color::BLACK
+            },
         }
     }
 }

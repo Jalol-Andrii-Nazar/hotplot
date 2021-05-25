@@ -1,8 +1,6 @@
 pub mod data;
 
-use std::collections::HashMap;
-
-use iced::{Color, Point, Rectangle, Size, Vector};
+use iced::{Point, Rectangle, Size, Vector};
 use iced::canvas::{Cache, Cursor, Frame, Geometry, Path, Program, Stroke, Text};
 use iced::{HorizontalAlignment, VerticalAlignment};
 
@@ -14,12 +12,12 @@ pub struct ChartBuilder<
     XD: AxisData<XV>,
     YD: AxisData<YV>,
 > {
-    pub settings: Settings,
-    pub min_x_value_opt: Option<XV>,
-    pub max_x_value_opt: Option<XV>,
-    pub min_y_value_opt: Option<YV>,
-    pub max_y_value_opt: Option<YV>,
-    pub data: Vec<(PlotSettings, Vec<(XD, YD)>)>,
+    settings: Settings,
+    min_x_value_opt: Option<XV>,
+    max_x_value_opt: Option<XV>,
+    min_y_value_opt: Option<YV>,
+    max_y_value_opt: Option<YV>,
+    data: Vec<(PlotSettings, Vec<(XD, YD)>)>,
 }
 
 impl <XV: AxisValue, YV: AxisValue, XD: AxisData<XV>, YD: AxisData<YV>> ChartBuilder<XV, YV, XD, YD> {
@@ -158,14 +156,14 @@ impl <XV: AxisValue, YV: AxisValue, XD: AxisData<XV>, YD: AxisData<YV>> ChartBui
 }
 
 pub struct Chart<XV: AxisValue, YV: AxisValue, XD: AxisData<XV>, YD: AxisData<YV>> {
-    pub settings: Settings,
-    pub min_x_value: XV,
-    pub max_x_value: XV,
+    settings: Settings,
+    min_x_value: XV,
+    max_x_value: XV,
     total_x_distance: f32,
-    pub min_y_value: YV,
-    pub max_y_value: YV,
+    min_y_value: YV,
+    max_y_value: YV,
     total_y_distance: f32,
-    pub data: Vec<(PlotSettings, Vec<(XD, YD)>)>,
+    data: Vec<(PlotSettings, Vec<(XD, YD)>)>,
     cache: Cache,
 }
 
@@ -230,7 +228,7 @@ impl<XV: AxisValue, YV: AxisValue, XD: AxisData<XV>, YD: AxisData<YV>> Chart<XV,
         frame: &mut Frame,
         padded_area: Rectangle,
         y: f32,
-        left_text: String,
+        text: &str,
     ) {
         let theme = self.settings.theme.clone();
         let width = frame.width();
@@ -240,11 +238,8 @@ impl<XV: AxisValue, YV: AxisValue, XD: AxisData<XV>, YD: AxisData<YV>> Chart<XV,
                 Point::new(padded_area.x + 3.0, y),
             ),
             Stroke {
-                color: Color {
-                    a: 0.8,
-                    ..theme.title_color
-                },
-                width: 3.0,
+                color: theme.y_label_short_line_color,
+                width: theme.y_label_short_line_width,
                 ..Default::default()
             },
         );
@@ -254,26 +249,29 @@ impl<XV: AxisValue, YV: AxisValue, XD: AxisData<XV>, YD: AxisData<YV>> Chart<XV,
                 Point::new(width - padded_area.x, y),
             ),
             Stroke {
-                color: Color {
-                    a: 0.8,
-                    ..theme.title_color
-                },
-                width: 1.0,
+                color: theme.y_label_long_line_color,
+                width: theme.y_label_long_line_width,
                 ..Default::default()
             },
         );
         frame.fill_text(Text {
-            content: format!("{}", left_text),
-            color: theme.title_color,
+            content: format!("{}", text),
+            color: theme.y_label_text_color,
             position: Point::new(padded_area.x - 5.0, y),
             horizontal_alignment: HorizontalAlignment::Right,
             vertical_alignment: VerticalAlignment::Center,
-            size: 12.0,
+            size: theme.y_label_text_size,
             ..Default::default()
         });
     }
 
-    fn draw_x_label(&self, frame: &mut Frame, padded_area: Rectangle, x: f32, text: String) {
+    fn draw_x_label(
+        &self,
+        frame: &mut Frame,
+        padded_area: Rectangle,
+        x: f32,
+        text: &str
+    ) {
         let theme = self.settings.theme.clone();
         let height = frame.height();
         frame.stroke(
@@ -282,11 +280,8 @@ impl<XV: AxisValue, YV: AxisValue, XD: AxisData<XV>, YD: AxisData<YV>> Chart<XV,
                 Point::new(x, height - padded_area.y + 3.0),
             ),
             Stroke {
-                color: Color {
-                    a: 0.8,
-                    ..theme.title_color
-                },
-                width: 3.0,
+                color: theme.x_label_short_line_color,
+                width: theme.x_label_short_line_width,
                 ..Default::default()
             },
         );
@@ -296,29 +291,24 @@ impl<XV: AxisValue, YV: AxisValue, XD: AxisData<XV>, YD: AxisData<YV>> Chart<XV,
                 Point::new(x, height - padded_area.y),
             ),
             Stroke {
-                color: Color {
-                    a: 0.8,
-                    ..theme.title_color
-                },
-                width: 1.0,
+                color: theme.x_label_long_line_color,
+                width: theme.x_label_long_line_width,
                 ..Default::default()
             },
         );
         frame.fill_text(Text {
             content: format!("{}", text),
-            color: theme.title_color,
+            color: theme.x_label_text_color,
             position: Point::new(x, height - padded_area.y + 5.0),
             horizontal_alignment: HorizontalAlignment::Center,
             vertical_alignment: VerticalAlignment::Top,
-            size: 12.0,
+            size: theme.x_label_text_size,
             ..Default::default()
         });
     }
 }
 
-impl<XV: data::AxisValue, YV: data::AxisValue, XD: data::AxisData<XV>, YD: data::AxisData<YV>>
-    Program<data::Message> for Chart<XV, YV, XD, YD>
-{
+impl <XV: data::AxisValue, YV: data::AxisValue, XD: data::AxisData<XV>, YD: data::AxisData<YV>> Program<data::Message> for Chart<XV, YV, XD, YD> {
     fn draw(&self, bounds: Rectangle, cursor: Cursor) -> Vec<Geometry> {
         let theme = self.settings.theme.clone();
         
@@ -405,7 +395,7 @@ impl<XV: data::AxisValue, YV: data::AxisValue, XD: data::AxisData<XV>, YD: data:
                     frame,
                     padded_area,
                     margined_area.y + margined_area.height - y,
-                    text,
+                    &text,
                 );
             }
 
@@ -435,7 +425,12 @@ impl<XV: data::AxisValue, YV: data::AxisValue, XD: data::AxisData<XV>, YD: data:
                     (0.0, self.total_x_distance),
                     (0.0, margined_area.width),
                 );
-                self.draw_x_label(frame, padded_area, margined_area.x + x, text);
+                self.draw_x_label(
+                    frame,
+                    padded_area,
+                    margined_area.x + x,
+                    &text
+                );
             }
 
             let points = self.points(margined_area.size());
@@ -548,9 +543,7 @@ impl<XV: data::AxisValue, YV: data::AxisValue, XD: data::AxisData<XV>, YD: data:
         _cursor: iced::canvas::Cursor,
     ) -> (iced::canvas::event::Status, Option<data::Message>) {
         match event {
-            iced::canvas::Event::Mouse(iced::mouse::Event::CursorMoved {
-                ..
-            }) => {
+            iced::canvas::Event::Mouse(iced::mouse::Event::CursorMoved { .. }) => {
                 self.cache.clear();
                 (iced::canvas::event::Status::Captured, None)
             }
