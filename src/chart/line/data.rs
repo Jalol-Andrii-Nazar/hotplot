@@ -16,16 +16,12 @@ pub struct ThemeSettings {
     pub data_description_size: f32,
     pub x_label_text_color: Color,
     pub x_label_text_size: f32,
-    pub x_label_long_line_color: Color,
-    pub x_label_long_line_width: f32,
-    pub x_label_short_line_color: Color,
-    pub x_label_short_line_width: f32,
+    pub x_label_line_color: Color,
+    pub x_label_line_width: f32,
     pub y_label_text_color: Color,
     pub y_label_text_size: f32,
-    pub y_label_long_line_color: Color,
-    pub y_label_long_line_width: f32,
-    pub y_label_short_line_color: Color,
-    pub y_label_short_line_width: f32,
+    pub y_label_line_color: Color,
+    pub y_label_line_width: f32,
 }
 
 impl Default for ThemeSettings {
@@ -40,25 +36,15 @@ impl Default for ThemeSettings {
             data_description_size: 16.0,
             x_label_text_color: Color::BLACK,
             x_label_text_size: 12.0,
-            x_label_long_line_width: 3.0,
-            x_label_long_line_color: Color {
-                a: 0.8,
-                ..Color::BLACK
-            },
-            x_label_short_line_width: 1.0,
-            x_label_short_line_color: Color {
+            x_label_line_width: 3.0,
+            x_label_line_color: Color {
                 a: 0.8,
                 ..Color::BLACK
             },
             y_label_text_color: Color::BLACK,
             y_label_text_size: 12.0,
-            y_label_long_line_width: 3.0,
-            y_label_long_line_color: Color {
-                a: 0.8,
-                ..Color::BLACK
-            },
-            y_label_short_line_width: 1.0,
-            y_label_short_line_color: Color {
+            y_label_line_width: 3.0,
+            y_label_line_color: Color {
                 a: 0.8,
                 ..Color::BLACK
             },

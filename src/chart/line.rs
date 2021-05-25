@@ -234,23 +234,12 @@ impl<XV: AxisValue, YV: AxisValue, XD: AxisData<XV>, YD: AxisData<YV>> Chart<XV,
         let width = frame.width();
         frame.stroke(
             &Path::line(
-                Point::new(padded_area.x - 3.0, y),
-                Point::new(padded_area.x + 3.0, y),
-            ),
-            Stroke {
-                color: theme.y_label_short_line_color,
-                width: theme.y_label_short_line_width,
-                ..Default::default()
-            },
-        );
-        frame.stroke(
-            &Path::line(
                 Point::new(padded_area.x, y),
                 Point::new(width - padded_area.x, y),
             ),
             Stroke {
-                color: theme.y_label_long_line_color,
-                width: theme.y_label_long_line_width,
+                color: theme.y_label_line_color,
+                width: theme.y_label_line_width,
                 ..Default::default()
             },
         );
@@ -276,23 +265,12 @@ impl<XV: AxisValue, YV: AxisValue, XD: AxisData<XV>, YD: AxisData<YV>> Chart<XV,
         let height = frame.height();
         frame.stroke(
             &Path::line(
-                Point::new(x, height - padded_area.y - 3.0),
-                Point::new(x, height - padded_area.y + 3.0),
-            ),
-            Stroke {
-                color: theme.x_label_short_line_color,
-                width: theme.x_label_short_line_width,
-                ..Default::default()
-            },
-        );
-        frame.stroke(
-            &Path::line(
                 Point::new(x, padded_area.y),
                 Point::new(x, height - padded_area.y),
             ),
             Stroke {
-                color: theme.x_label_long_line_color,
-                width: theme.x_label_long_line_width,
+                color: theme.x_label_line_color,
+                width: theme.x_label_line_width,
                 ..Default::default()
             },
         );
