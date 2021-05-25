@@ -487,8 +487,8 @@ impl <XV: data::AxisValue, YV: data::AxisValue, XD: data::AxisData<XV>, YD: data
                     frame.fill_text(Text {
                         content,
                         position: Point::new(padded_area.width + pleft, ptop / 2.0),
-                        color: theme.title_color,
-                        size: 16.0,
+                        color: theme.data_description_color,
+                        size: theme.data_description_size,
                         horizontal_alignment: HorizontalAlignment::Right,
                         vertical_alignment: VerticalAlignment::Center,
                         ..Default::default()
