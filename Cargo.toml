@@ -15,7 +15,7 @@ maintenance = { status = "experimental" }
 default = ["chrono"]
 
 [dependencies]
-iced = { version = "0.3", features = ["glow", "glow_canvas"] }
+iced = { version = "0.3", features = ["canvas"] }
 chrono = { version = "0.4.19", default-features = false, optional = true }
 
 [dev-dependencies]
